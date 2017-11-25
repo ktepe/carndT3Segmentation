@@ -5,6 +5,10 @@ import warnings
 from distutils.version import LooseVersion
 import project_tests as tests
 
+epochs = 50
+batch_size = 16
+STDDEV=0.001
+L2REG=0.001
 
 # Check TensorFlow Version
 assert LooseVersion(tf.__version__) >= LooseVersion('1.0'), 'Please use TensorFlow version 1.0 or newer.  You are using {}'.format(tf.__version__)
@@ -61,31 +65,31 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     # FCN-Decoders
     # skip things lecture 10 scene understanding.
     layer7_conv1x1=tf.layers.conv2d(vgg_layer7_out, num_classes, 1, padding='same',
-                                    kernel_initializer=tf.random_normal_initializer(stddev=0.05),
+                                    kernel_initializer=tf.random_normal_initializer(stddev=STDDEV),
                                     kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
     #upsample layer 7
     layer4_input1 = tf.layers.conv2d_transpose(layer7_conv1x1, num_classes, 4, 2, padding='same',
-                                               kernel_initializer=tf.random_normal_initializer(stddev=0.01),
+                                               kernel_initializer=tf.random_normal_initializer(stddev=STDDEV),
                                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
     layer4_input2= tf.layers.conv2d(vgg_layer4_out, num_classes, 1, padding='same',
-                                    kernel_initializer=tf.random_normal_initializer(stddev=0.05),
+                                    kernel_initializer=tf.random_normal_initializer(stddev=STDDEV),
                                     kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
     #skip connection
     layer4_conv1x1=tf.add(layer4_input1, layer4_input2)
     #
     layer3_input1=tf.layers.conv2d(vgg_layer3_out, num_classes, 1, padding='same',
-                                   kernel_initializer=tf.random_normal_initializer(stddev=0.05),
+                                   kernel_initializer=tf.random_normal_initializer(stddev=STDDEV),
                                    kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
     #upsample layer 4
     layer3_input2=tf.layers.conv2d_transpose(layer4_conv1x1, num_classes, 4, 2, padding='same',
-                                             kernel_initializer=tf.random_normal_initializer(stddev=0.01),
+                                             kernel_initializer=tf.random_normal_initializer(stddev=STDDEV),
                                              kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     layer3_conv1x1=tf.add(layer3_input1, layer3_input2)
 
     #last layer
     layer_out=tf.layers.conv2d_transpose(layer3_conv1x1, num_classes, 16, 8, padding='same',
-                                         kernel_initializer=tf.random_normal_initializer(stddev=0.05),
+                                         kernel_initializer=tf.random_normal_initializer(stddev=STDDEV),
                                          kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
 
     return layer_out
@@ -145,7 +149,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
             #_, loss= sess.run([train_op, cross_entropy_loss],
             #            feed_dict={input_image: image, correct_label: label, keep_prob: keep_prob, learning_rate: learning_rate})
             _, loss = sess.run([train_op, cross_entropy_loss],
-                               feed_dict = {input_image: image, correct_label: label, keep_prob: 0.4, learning_rate: 0.001})
+                               feed_dict = {input_image: image, correct_label: label, keep_prob: 0.5, learning_rate: 0.0002})
 
             print("Epoch {} of {}  ".format(epoch+1, epochs), " Loss: {:.4f} ".format(loss))
         print()
@@ -168,8 +172,7 @@ def run():
     # OPTIONAL: Train and Inference on the cityscapes dataset instead of the Kitti dataset.
     # You'll need a GPU with at least 10 teraFLOPS to train on.
     #  https://www.cityscapes-dataset.com/
-    epochs = 50
-    batch_size = 16
+    
 
     with tf.Session() as sess:
         # Path to vgg model
