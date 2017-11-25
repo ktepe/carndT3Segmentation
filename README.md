@@ -163,13 +163,26 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 
 The FCN implementation is run with different hyper parameters, namely learning_rate, number of epochs, standard deviation and l2_regularizer values. The trade-off in the system are as follows. Increased number of epochs improves the loss hence decreases the errors, however, the time it takes to complete the training also increases. Learning curve has similar impact, Smaller learning curve values requires more time to converge to a stable loss value but the final loss would be lower. The number of epochs and learning rate needs to be carefully adjusted to obtain the best possible model with smaller number of epochs.
 
+Few samples of the outputs are provided here to show that the FCN can reasonably segment the roads in the pictures.
 
-Reference-style:
-![alt text](./samples/sample1.png)
+![](./samples/sample1.png)
 
-![alt text][./samples/sample2.png]
+![](./samples/sample2.png)
 
-![alt text][./samples/sample3.png]
+![](./samples/sample3.png)
 
+![](./samples/sample4.png)
+
+![](./samples/sample5.png)
 
 ### Conclusions
+
+In the project, segmentation of roads were successfully done. The hyper parameters that we have obtained the best results are:
+* Learning rate: 0.0005
+* Keep probability: 0.5
+* Epochs: 50
+* Batch size: 16
+* STDDEV=0.001
+* Regularizer value: 0.001
+
+With augmentation techniques and using other data sets, the model can be further optimized. However, with given data set, the model works reasonably well.
