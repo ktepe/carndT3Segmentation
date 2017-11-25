@@ -165,7 +165,7 @@ The FCN implementation is run with different hyper parameters, namely learning_r
 
 
 Reference-style:
-![alt text][./samples/sample1.png]
+![alt text](./samples/sample1.png)
 
 ![alt text][./samples/sample2.png]
 
